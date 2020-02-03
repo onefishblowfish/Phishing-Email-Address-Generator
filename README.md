@@ -16,18 +16,14 @@ PhishGen is a penetration testing and red teaming tool that automates the proces
 
 Clone the GitHub repository
 ```
-git clone https://github.com/jamesm0rr1s/Phishing-Email-Address-Generator /opt/jamesm0rr1s/Phishing-Email-Address-Generator
+git clone https://github.com/jamesm0rr1s/Phishing-Email-Address-Generator
+pip3 install -r requirements.txt
 ```
 
 ## Requirements
 
  - A LinkedIn account
    - Connections with multiple employees. (The more the better)
- - The script will attempt to install the following requirements if they are not already installed. The following commands can be used to manually install the requirements:
-```
-pip install beautifulsoup4
-pip install colorama
-```
 
 ## Usage
 
