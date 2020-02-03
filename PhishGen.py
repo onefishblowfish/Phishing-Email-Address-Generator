@@ -16,22 +16,8 @@ from colorama import Fore, Back, Style
 import colorama
 from bs4 import BeautifulSoup
 
+# Initialize Colorama
 colorama.init()
-
-# Check if being run from IDLE
-def check_idle():
-
-    # Check if being run from IDLE
-    if ("idlelib" in sys.modules):
-
-        # Tell the user to run from the command line
-        print("Run from the command line: \"python PhishGen.py\"")
-
-        # exit
-        sys.exit()
-
-# Check if being run from IDLE
-check_idle()
 
 # Set the colors
 bo = colorama.Style.BRIGHT
