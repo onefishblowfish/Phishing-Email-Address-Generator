@@ -6,7 +6,6 @@ import getpass # For getting the user's LinkedIn password securely
 import json # For loading LinkedIn data
 import math # For rounding up on the number of emails to get the number of pages
 import os # For checking if cookie file is valid for logging into LinkedIn
-import pip # For installing requirements
 import requests # For loading LinkedIn requests
 import sys # For terminating the script with a status code from main
 import time # For pausing every one second to wait for the output file to be closed if it is open before the script is run
