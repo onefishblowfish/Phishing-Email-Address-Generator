@@ -12,7 +12,6 @@ import sys # For terminating the script with a status code from main
 import time # For pausing every one second to wait for the output file to be closed if it is open before the script is run
 import urllib # For logging into LinkedIn
 import urllib3 # For logging into LinkedIn
-from colorama import Fore, Back, Style
 import colorama
 from bs4 import BeautifulSoup
 
