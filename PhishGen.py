@@ -313,25 +313,25 @@ def ask_user_to_generate_emails_from_linkedin():
 def ask_user_for_linkedin_email():
 
     # Set a blank error message
-    errorMessage = ""
+    error_message = ""
 
     # Loop until a valid email has been entered
     while True:
 
         # Ask the user to enter their email
-        linkedinEmail = input("\n" + errorMessage + "What is your LinkedIn email address?" + "\n").lower()
+        linkedin_email = input("\n" + error_message + "What is your LinkedIn email address?" + "\n").lower()
 
         # Check if an incorrect email was entered
-        if "@" not in linkedinEmail and "." not in linkedinEmail:
+        if "@" not in linkedin_email and "." not in linkedin_email:
 
             # Set the error message to incorrect email entered
-            errorMessage = failure + "Incorrect email entered. "
+            error_message = failure + "Incorrect email entered. "
 
         # Correct email entered
         else:
 
             # Return the email
-            return linkedinEmail
+            return linkedin_email
 
 
 # Ask the user for their LinkedIn password
@@ -341,10 +341,10 @@ def ask_user_for_linkedin_password():
     while True:
 
         # Ask the user to enter their password
-        linkedinPassword = getpass.getpass(prompt="\n" + "What is your LinkedIn password?" + "\n")
+        linkedin_password = getpass.getpass(prompt="\n" + "What is your LinkedIn password?" + "\n")
 
         # Check if a blank password was entered
-        if linkedinPassword == "":
+        if linkedin_password == "":
 
             # Set the error message to no password entered
             print(failure + "No password entered")
@@ -356,7 +356,7 @@ def ask_user_for_linkedin_password():
             print(info + "I got your password ;)   Kidding... check out the source code at https://github.com/jamesm" + gr + "0" + en + "rr" + gr + "1" + en + "s" + "\n")
 
             # Return the password
-            return linkedinPassword
+            return linkedin_password
 
 
 # Login to LinkedIn
@@ -366,47 +366,47 @@ def login_to_linkedin(username, password):
     try:
         
         # Create a temporary file to store the cookie
-        cookieFile = "cookie.txt"
+        cookie_file = "cookie.txt"
 
         # Create a cookie jar for the HTTP cookies
-        cookieJar = http.cookiejar.MozillaCookieJar(cookieFile)
+        cookie_jar = http.cookiejar.MozillaCookieJar(cookie_file)
 
         # Check for file existence
-        if os.access(cookieFile, os.F_OK):
+        if os.access(cookie_file, os.F_OK):
 
             # Load the cookie jar file
-            cookieJar.load()
+            cookie_jar.load()
 
         # Create an url opener to add a cookie
-        urlOpener = urllib3.build_opener(
+        url_opener = urllib3.build_opener(
             urllib3.HTTPRedirectHandler(),
             urllib3.HTTPHandler(debuglevel=0),
             urllib3.HTTPSHandler(debuglevel=0),
-            urllib3.HTTPCookieProcessor(cookieJar)
+            urllib3.HTTPCookieProcessor(cookie_jar)
         )
 
         # Add header
-        urlOpener.addheaders = [("User-agent", ("Mozilla/5.0"))]
+        url_opener.addheaders = [("User-agent", ("Mozilla/5.0"))]
 
         # Open the url with cookie
         #soup = get_soup("https://www.linkedin.com/", urlOpener) # No longer works as of July 2019
-        soup = get_soup("https://www.linkedin.com/login", urlOpener)
+        soup = get_soup("https://www.linkedin.com/login", url_opener)
 
         # Get the csrf token
         #csrfToken = soup.find(id="loginCsrfParam-login")["value"] # No longer works as of July 2019
-        csrfToken = soup.find("input", {"name":"loginCsrfParam"})["value"]
+        csrf_token = soup.find("input", {"name":"loginCsrfParam"})["value"]
 
     # Set the login parameters
-        loginParameters = urllib.urlencode({"session_key": username, "session_password": password, "loginCsrfParam": csrfToken})
+        login_parameters = urllib.urlencode({"session_key": username, "session_password": password, "loginCsrfParam": csrf_token})
 
         # Login to LinkedIn
-        soup = get_soup("https://www.linkedin.com/uas/login-submit", urlOpener, loginParameters)
+        soup = get_soup("https://www.linkedin.com/uas/login-submit", url_opener, login_parameters)
 
         # Try to get the cookie
         try:
 
             # Get the li_at cookie
-            cookie = cookieJar._cookies[".www.linkedin.com"]["/"]["li_at"].value
+            cookie = cookie_jar._cookies[".www.linkedin.com"]["/"]["li_at"].value
             
         # Unable to get the cookie
         except:
@@ -415,10 +415,10 @@ def login_to_linkedin(username, password):
             return None
 
         # Save the cookie jar file
-        cookieJar.save()
+        cookie_jar.save()
 
         # Remove the cookie file
-        os.remove(cookieFile)
+        os.remove(cookie_file)
 
         # Check if there is not a cookie
         if len(cookie) == 0:
@@ -430,10 +430,10 @@ def login_to_linkedin(username, password):
         print(info + "Successfully logged into LinkedIn")
 
         # Create a dictionary of cookies
-        dictionaryOfCookies = dict(JSESSIONID="ajax:amFtZXNtMHJyMXM")
+        dictionary_of_cookies = dict(JSESSIONID="ajax:amFtZXNtMHJyMXM")
 
         # Add the li_at
-        dictionaryOfCookies["li_at"] = cookie
+        dictionary_of_cookies["li_at"] = cookie
 
     # Unable to login
     except:
@@ -442,26 +442,26 @@ def login_to_linkedin(username, password):
         return None
 
     # Return the cookies
-    return dictionaryOfCookies
+    return dictionary_of_cookies
 
 
 # Ask the user for the LinkedIn company name to search for an ID
 def ask_user_for_linkedin_company_name():
 
     # Set a blank error message
-    errorMessage = ""
+    error_message = ""
 
     # Loop until a company has been entered
     while True:
 
         # Ask the user to enter the company to search for
-        company = input(errorMessage + "What company would you like to search LinkedIn for?" + "\n").lower()
+        company = input(error_message + "What company would you like to search LinkedIn for?" + "\n").lower()
 
         # Check if no company was entered
         if company == "":
 
             # Set the error message to no company entered
-            errorMessage = failure + "No company name was entered. "
+            error_message = failure + "No company name was entered. "
 
         # A company was entered
         else:
@@ -474,7 +474,7 @@ def ask_user_for_linkedin_company_name():
 def get_company_id_from_linkedin(company_name, cookie_dict):
 
     # Create a list to store the company name and ID
-    listOfCompanies = []
+    list_of_companies = []
 
     # Set the search url
     url = "https://www.linkedin.com/voyager/api/typeahead/hits?q=blended&query=" + company_name
@@ -483,28 +483,28 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
     v2headers = {"Csrf-Token":cookie_dict["JSESSIONID"], "X-RestLi-Protocol-Version": "2.0.0"}
 
     # Get the json data from the response
-    jsonData = json.loads(requests.get(url, cookies=cookie_dict, headers=v2headers).text)
+    json_data = json.loads(requests.get(url, cookies=cookie_dict, headers=v2headers).text)
 
     # Tell the user that companies are being searched for
     print("\n" + info + "Searching for companies using autocomplete \"" + company_name + "\"")
 
     # Loop through all of the elements
-    for x in range(0, len(jsonData["elements"])):
+    for x in range(0, len(json_data["elements"])):
 
         # Try to get the company name and ID
         try:
             
             # Get the company name
-            companyName = jsonData["elements"][x]["hitInfo"]["com.linkedin.voyager.typeahead.TypeaheadCompany"]["company"]["name"]
+            company_name = json_data["elements"][x]["hitInfo"]["com.linkedin.voyager.typeahead.TypeaheadCompany"]["company"]["name"]
 
             # Get the company ID
-            companyId = jsonData["elements"][x]["hitInfo"]["com.linkedin.voyager.typeahead.TypeaheadCompany"]["id"]
+            company_id = json_data["elements"][x]["hitInfo"]["com.linkedin.voyager.typeahead.TypeaheadCompany"]["id"]
 
             # Add the company name and ID to the list of companies
-            listOfCompanies.append((companyName, companyId))
+            list_of_companies.append((company_name, company_id))
 
             # Tell the user that a company token was found
-            print(success + "The company token found for \"" + companyName.encode("utf8") + "\" is " + companyId)
+            print(success + "The company token found for \"" + company_name.encode("utf8") + "\" is " + company_id)
 
         # Error while getting company name and ID
         except:
@@ -516,7 +516,7 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
     url = "https://www.linkedin.com/voyager/api/search/blended?keywords=" + company_name + "&origin=SWITCH_SEARCH_VERTICAL&count=10&q=all&filters=List(resultType->COMPANIES)&start=0"
 
     # Get the json data from the response
-    jsonData = json.loads(requests.get(url, cookies=cookie_dict, headers=v2headers).text)
+    json_data = json.loads(requests.get(url, cookies=cookie_dict, headers=v2headers).text)
     
     # Tell the user that companies are being searched for using a keyword
     print("\n" + info + "Searching for companies using keyword \"" + company_name + "\"")
@@ -525,40 +525,40 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
     try:
 
         # Get the number of companies
-        numberOfCompanies = len(jsonData["elements"][0]["elements"])
+        number_of_companies = len(json_data["elements"][0]["elements"])
 
         # Companies were found
-        companiesFound = True
+        companies_found = True
 
     # No companies found
     except:
 
         # Companies were not found
-        companiesFound = False
+        companies_found = False
 
     # Check if companies were found using the keyword search
-    if companiesFound:
+    if companies_found:
 
         # Loop through all of the elements
-        for x in range(0, numberOfCompanies):
+        for x in range(0, number_of_companies):
 
             # Try to get the company name and ID
             try:
                 
                 # Get the company name
-                companyName = jsonData["elements"][0]["elements"][x]["title"]["text"]
+                company_name = json_data["elements"][0]["elements"][x]["title"]["text"]
                 
                 # Get the company ID
-                companyId = jsonData["elements"][0]["elements"][x]["trackingUrn"].split(":")[-1]
+                company_id = json_data["elements"][0]["elements"][x]["trackingUrn"].split(":")[-1]
                     
                 # Check if the company name and ID are not already in the list
-                if (companyName,companyId) not in listOfCompanies:
+                if (company_name,company_id) not in list_of_companies:
 
                     # Add the company name and ID to the list of companies
-                    listOfCompanies.append((companyName, companyId))
+                    list_of_companies.append((company_name, company_id))
 
                     # Tell the user that a company token was found
-                    print(success + "The company token found for \"" + companyName.encode("utf8") + "\" is " + companyId)
+                    print(success + "The company token found for \"" + company_name.encode("utf8") + "\" is " + company_id)
 
             # Error while getting company name and ID
             except:
@@ -567,19 +567,19 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
                 continue
 
     # Check if a company was found
-    if listOfCompanies:
+    if list_of_companies:
         
         # Set the first company name found
-        companyName = listOfCompanies[0][0]
+        company_name = list_of_companies[0][0]
 
         # Set the first company ID found
-        companyId = listOfCompanies[0][1]
+        company_id = list_of_companies[0][1]
 
         # Tell the user which company name and ID are being used
-        print("\n" + info + "The first company token found for \"" + companyName.encode("utf8") + "\" was: " + companyId)
+        print("\n" + info + "The first company token found for \"" + company_name.encode("utf8") + "\" was: " + company_id)
 
         # Return the company ID
-        return companyName, companyId
+        return company_name, company_id
 
     # A company was not found
     else:
@@ -592,55 +592,55 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
 def ask_user_for_linkedin_company_id(cookie_dict):
 
     # Set a blank error message
-    errorMessage = ""
+    error_message = ""
 
     # Loop until a valid integer has been entered
     while True:
 
         # Ask the user to enter the company ID
-        linkedinCompanyId = input("\n" + errorMessage + "What is the LinkedIn company ID? Leave blank to search for the ID." + "\n")
+        linkedin_company_id = input("\n" + error_message + "What is the LinkedIn company ID? Leave blank to search for the ID." + "\n")
 
         # Check if the user wants to search for the company ID
-        if linkedinCompanyId == "":
+        if linkedin_company_id == "":
 
             # Ask the user for the company name to search for
             companyToSearchForOnLinkedin = ask_user_for_linkedin_company_name()
 
             # Search LinkedIn for the company ID
-            linkedinCompanyName, linkedinCompanyId = get_company_id_from_linkedin(companyToSearchForOnLinkedin, cookie_dict)
+            linkedinCompanyName, linkedin_company_id = get_company_id_from_linkedin(companyToSearchForOnLinkedin, cookie_dict)
 
             # Check if a company ID was not found
-            if linkedinCompanyId == "-1":
+            if linkedin_company_id == "-1":
 
                 # Set the error message to company ID not found
-                errorMessage = warning + "Company ID not found. "
+                error_message = warning + "Company ID not found. "
 
             # Company ID found
             else:
                 
                 # Set a blank error message for the main loop
-                errorMessage = ""
+                error_message = ""
 
                 # Set an initial blank error message for the nested loop
-                errorMsg = ""
+                error_msg = ""
 
                 # Loop until a valid integer has been entered
                 while True:
         
                     # Check if the correct company was found
-                    linkedinCompanyCorrect = input("\n" + errorMsg + "Would you like to select the company \"" + linkedinCompanyName + "\" with an ID of \"" + linkedinCompanyId + "\" (y/n)" + "\n").lower()
+                    linkedin_company_correct = input("\n" + error_msg + "Would you like to select the company \"" + linkedinCompanyName + "\" with an ID of \"" + linkedin_company_id + "\" (y/n)" + "\n").lower()
 
                     # Check if the choice is yes
-                    if linkedinCompanyCorrect == "y" or linkedinCompanyCorrect == "yes":
+                    if linkedin_company_correct == "y" or linkedin_company_correct == "yes":
 
                         # Print a blank line
                         print("")
 
                         # Return the company ID
-                        return str(linkedinCompanyId)
+                        return str(linkedin_company_id)
 
                     # The choice is no
-                    elif linkedinCompanyCorrect == "n" or linkedinCompanyCorrect == "no":
+                    elif linkedin_company_correct == "n" or linkedin_company_correct == "no":
 
                         # Break out of the nested while loop
                         break
@@ -649,7 +649,7 @@ def ask_user_for_linkedin_company_id(cookie_dict):
                     else:
 
                         # Set the error message to incorrect choice entered
-                        errorMsg = failure + "Incorrect choice entered. "
+                        error_msg = failure + "Incorrect choice entered. "
 
         # User entered input
         else:
@@ -658,19 +658,19 @@ def ask_user_for_linkedin_company_id(cookie_dict):
             try:
 
                 # Check if ID can be casted to int, is not blank, and is greater than 0
-                if int(linkedinCompanyId) > 0:
+                if int(linkedin_company_id) > 0:
 
                     # Print a blank line
                     print("")
 
                     # Return the company ID
-                    return str(linkedinCompanyId)
+                    return str(linkedin_company_id)
 
             # Input is not an integer
             except:
                 
                 # Set the error message to not an integer
-                errorMessage = failure + "Input was not a valid integer. "
+                error_message = failure + "Input was not a valid integer. "
 
 
 # Get the keywords search string for LinkedIn URLs
@@ -680,26 +680,28 @@ def get_search_string(keywordsForSearch):
     if keywordsForSearch == "":
 
         # Set the keywords search string to blank
-        keywordsSearchString = ""
+        keywords_search_string = ""
 
     # There are keywords to search for
     else:
         
         # Set the keywords search string
-        keywordsSearchString = "&keywords=" + keywordsForSearch
+        keywords_search_string = "&keywords=" + keywordsForSearch
 
     # Return the keywords search string
-    return keywordsSearchString
+    return keywords_search_string
 
 
 # Get the number of LinkedIn pages to search
 def get_the_number_of_linkedin_pages_to_search(numberOfProfilesPerPage, keywordsForSearch, companyId, dictOfCookies):
 
     # Get the keywords search string
-    keywordsSearchString = get_search_string(keywordsForSearch)
+    keywords_search_string = get_search_string(keywordsForSearch)
 
     # Set the initial url to get the total number of pages
-    url = "https://www.linkedin.com/voyager/api/search/cluster?count=" + str(numberOfProfilesPerPage) + keywordsSearchString + "&guides=List(v->PEOPLE,facetCurrentCompany->" + companyId + ")&origin=OTHER&q=guided&start=0"
+    url = "https://www.linkedin.com/voyager/api/search/cluster?count=" + str(numberOfProfilesPerPage)
+    url += keywords_search_string + "&guides=List(v->PEOPLE,facetCurrentCompany->" + companyId
+    url += ")&origin=OTHER&q=guided&start=0"
 
     # Add v2 API headers
     v2headers = {"Csrf-Token":dictOfCookies["JSESSIONID"], "X-RestLi-Protocol-Version":"2.0.0"}
@@ -717,7 +719,8 @@ def get_the_number_of_linkedin_pages_to_search(numberOfProfilesPerPage, keywords
     except:
 
         # Tell the user there were no results
-        print(warning + "There were no search results for company ID \"" + companyId + "\" using the keywords \"" + keywordsForSearch + "\".")
+        print(warning + "There were no search results for company ID \"" + companyId + "\" using the keywords \"" +
+              keywordsForSearch + "\".")
 
         # Return since a company was not found
         return 0
@@ -762,7 +765,8 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
         else:
 
             # Print the current search page and keyword
-            print("\n" + info + "Searching LinkedIn page " + str(pageNumber + 1) + " of " + str(maxPageNumber) + " using the keyword \"" + keywordsForSearch + "\"")
+            print("\n" + info + "Searching LinkedIn page " + str(pageNumber + 1) + " of " + str(maxPageNumber) +
+                  " using the keyword \"" + keywordsForSearch + "\"")
 
         # Set the url using the page number
         url = "https://www.linkedin.com/voyager/api/search/cluster?count=" + str(numberOfProfilesPerPage) + keywordsSearchString + "&q=guided&guides=List(v->PEOPLE,facetCurrentCompany->" + companyId + ")&origin=OTHER&start=" + str(pageNumber * numberOfProfilesPerPage)
