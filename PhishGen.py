@@ -1,8 +1,6 @@
-﻿# Requirements
-# pip install beautifulsoup4
-# pip install colorama
+﻿#!/usr/bin/env python3
 
-import cookielib # For logging into LinkedIn
+import http.cookiejar # For logging into LinkedIn
 import csv # For creating the list of emails
 import getpass # For getting the user's LinkedIn password securely
 import json # For loading LinkedIn data
@@ -13,9 +11,12 @@ import requests # For loading LinkedIn requests
 import sys # For terminating the script with a status code from main
 import time # For pausing every one second to wait for the output file to be closed if it is open before the script is run
 import urllib # For logging into LinkedIn
-import urllib2 # For logging into LinkedIn
+import urllib3 # For logging into LinkedIn
+from colorama import Fore, Back, Style
+import colorama
+from bs4 import BeautifulSoup
 
-
+colorama.init()
 
 # Check if being run from IDLE
 def check_idle():
@@ -29,92 +30,8 @@ def check_idle():
         # exit
         sys.exit()
 
-
-
 # Check if being run from IDLE
 check_idle()
-
-
-
-# Check if requirements are installed
-package = "colorama"
-
-# Try to import the package
-try:
-
-    # Import Colorama
-    from colorama import Fore, Back, Style
-    import colorama
-
-# Package not installed
-except:
-
-    # Check if pip has the attribute main
-    if hasattr(pip, 'main'):
-
-        # Install the package
-        pip.main(['install', package])
-
-    # Pip does not have the attribute main
-    else:
-
-        # Install the package
-        pip._internal.main(['install', package])
-
-    # Try to import after the install
-    try:
-
-        # Import Colorama
-        import colorama
-
-    # Package was not installed
-    except:
-
-        # Tell the user the command to run to install manually
-        print("Unable to install " + package + ". Run \"pip install " + package + "\"")
-
-# Initialize colorama
-colorama.init()
-
-
-
-# Check if requirements are installed
-package = "beautifulsoup4"
-
-# Try to import the package
-try:
-        
-    # Import BeautifulSoup
-    from bs4 import BeautifulSoup
-
-# Package not installed
-except:
-
-    # Check if pip has the attribute main
-    if hasattr(pip, 'main'):
-
-        # Install the package
-        pip.main(['install', package])
-
-    # Pip does not have the attribute main
-    else:
-
-        # Install the package
-        pip._internal.main(['install', package])
-
-    # Try to import after the install
-    try:
-
-        # Import BeautifulSoup
-        from bs4 import BeautifulSoup
-
-    # Package was not installed
-    except:
-
-        # Tell the user the command to run to install manually
-        print("Unable to install " + package + ". Run \"pip install " + package + "\"")
-
-
 
 # Set the colors
 bo = colorama.Style.BRIGHT
@@ -131,9 +48,6 @@ success = bo + gr + "[+] " + en
 info    = bo + bl + "[*] " + en
 warning = bo + ye + "[-] " + en
 failure = bo + re + "[!] " + en
-
-
-
 
 # Print the banner
 def print_banner():
