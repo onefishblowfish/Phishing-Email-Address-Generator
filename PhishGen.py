@@ -1,15 +1,16 @@
 ﻿#!/usr/bin/env python3
-import http.cookiejar # For logging into LinkedIn
-import csv # For creating the list of emails
-import getpass # For getting the user's LinkedIn password securely
-import json # For loading LinkedIn data
-import math # For rounding up on the number of emails to get the number of pages
-import os # For checking if cookie file is valid for logging into LinkedIn
-import requests # For loading LinkedIn requests
-import sys # For terminating the script with a status code from main
-import time # For pausing every one second to wait for the output file to be closed if it is open before the script is run
-import urllib.request, urllib.parse, urllib.error # For logging into LinkedIn
-import urllib3 # For logging into LinkedIn
+import http.cookiejar  # For logging into LinkedIn
+import csv  # For creating the list of emails
+import getpass  # For getting the user's LinkedIn password securely
+import json  # For loading LinkedIn data
+import math  # For rounding up on the number of emails to get the number of pages
+import os  # For checking if cookie file is valid for logging into LinkedIn
+import requests  # For loading LinkedIn requests
+import sys  # For terminating the script with a status code from main
+import \
+    time  # For pausing every one second to wait for the output file to be closed if it is open before the script is run
+import urllib.request, urllib.parse, urllib.error  # For logging into LinkedIn
+import urllib3  # For logging into LinkedIn
 import colorama
 from bs4 import BeautifulSoup
 
@@ -35,7 +36,6 @@ failure = bo + re + "[!] " + en
 
 # Print the banner
 def print_banner():
-
     # Print the title
     print(gr)
     print((" ██████╗██╗ ██╗██╗██████╗██╗ ██╗  ██████╗ ██████╗███╗  ██╗ ".decode('utf8')))
@@ -79,8 +79,7 @@ def print_banner():
 
 
 # Ask the user for the domain
-def ask_user_for_domain():
-
+def get_domain():
     # Set a blank error message
     error_message = ""
 
@@ -99,11 +98,10 @@ def ask_user_for_domain():
 
 
 # Ask the user for the output filename
-def ask_user_for_output_filename(domain):
-
+def get_output_filename(domain):
     # Ask the user for the output filename
     output_filename = eval(input("\n" + "Enter a filename for the output. Leave blank to use \"emails-" +
-                            domain + ".csv\"" + "\n"))
+                                 domain + ".csv\"" + "\n"))
 
     # Check if no name was given
     if output_filename == "":
@@ -128,7 +126,6 @@ def ask_user_for_output_filename(domain):
 
 # Check if the output file is open
 def check_outputfile(filename, email_list):
-
     # Try to open the file
     try:
         # Test saving the header row to the file
@@ -164,9 +161,8 @@ def check_outputfile(filename, email_list):
 
 # Open URL and get soup with cookie
 def get_soup(url, opener=None, parameters=None):
-
     # Try to open the url
-    try:        
+    try:
         # Check if logging in with login parameters
         if opener and parameters:
             # Open the login page
@@ -195,7 +191,6 @@ def get_soup(url, opener=None, parameters=None):
 
 # Get the email format
 def get_email_format(domain):
-
     # Get the soup
     soup = get_soup("https://www.email-format.com/d/" + domain)
 
@@ -204,7 +199,6 @@ def get_email_format(domain):
 
     # Get the first email format
     for div in soup.findAll("div", {"class": "format fl"}):
-
         # Set the email format
         email_format = div.text.strip()
 
@@ -231,8 +225,7 @@ def get_email_format(domain):
 
 
 # Ask the user for the email format
-def ask_user_for_email_format(domain):
-
+def ask_email_format(domain):
     # Set a blank error message
     error_message = ""
 
@@ -262,7 +255,7 @@ def ask_user_for_email_format(domain):
 
                 # Return the email format that was found
                 return email_format
-            
+
             # Email format was not found
             else:
 
@@ -285,8 +278,7 @@ def ask_user_for_email_format(domain):
 
 
 # Ask the user if they want to check LinkedIn for emails
-def ask_user_to_generate_emails_from_linkedin():
-
+def get_linkedin_users():
     # Set a blank error message
     error_message = ""
 
@@ -315,10 +307,16 @@ def ask_user_to_generate_emails_from_linkedin():
             # Set the error message to incorrect choice entered
             error_message = failure + "Incorrect choice entered. "
 
-
+def get_linkedin_login():
+    error_message = ""
+    while True:
+        linkedin_email = input("\n" + error_message + "What is your LinkedIn email address?" + "\n").lower()
+        if "@" not in linkedin_email and "." not in linkedin_email:
+            error_message = failure + "Invalid email entered. "
+        else
+            return linkedin_email
 # Ask the user for their LinkedIn email
 def ask_user_for_linkedin_email():
-
     # Set a blank error message
     error_message = ""
 
@@ -343,7 +341,6 @@ def ask_user_for_linkedin_email():
 
 # Ask the user for their LinkedIn password
 def ask_user_for_linkedin_password():
-
     # Loop until a password has been entered
     while True:
 
@@ -369,10 +366,9 @@ def ask_user_for_linkedin_password():
 
 # Login to LinkedIn
 def login_to_linkedin(username, password):
-    
     # Try to login to LinkedIn
     try:
-        
+
         # Create a temporary file to store the cookie
         cookie_file = "cookie.txt"
 
@@ -381,7 +377,6 @@ def login_to_linkedin(username, password):
 
         # Check for file existence
         if os.access(cookie_file, os.F_OK):
-
             # Load the cookie jar file
             cookie_jar.load()
 
@@ -397,14 +392,12 @@ def login_to_linkedin(username, password):
         url_opener.addheaders = [("User-agent", ("Mozilla/5.0"))]
 
         # Open the url with cookie
-        #soup = get_soup("https://www.linkedin.com/", urlOpener) # No longer works as of July 2019
         soup = get_soup("https://www.linkedin.com/login", url_opener)
 
         # Get the csrf token
-        #csrfToken = soup.find(id="loginCsrfParam-login")["value"] # No longer works as of July 2019
-        csrf_token = soup.find("input", {"name":"loginCsrfParam"})["value"]
+        csrf_token = soup.find("input", {"name": "loginCsrfParam"})["value"]
 
-    # Set the login parameters
+        # Set the login parameters
         login_parameters = urllib.parse.urlencode({"session_key": username, "session_password": password,
                                                    "loginCsrfParam": csrf_token})
 
@@ -416,10 +409,10 @@ def login_to_linkedin(username, password):
 
             # Get the li_at cookie
             cookie = cookie_jar._cookies[".www.linkedin.com"]["/"]["li_at"].value
-            
+
         # Unable to get the cookie
         except:
-            
+
             # Return nothing
             return None
 
@@ -431,7 +424,6 @@ def login_to_linkedin(username, password):
 
         # Check if there is not a cookie
         if len(cookie) == 0:
-            
             # Return nothing
             return None
 
@@ -446,7 +438,7 @@ def login_to_linkedin(username, password):
 
     # Unable to login
     except:
-        
+
         # Return nothing
         return None
 
@@ -456,7 +448,6 @@ def login_to_linkedin(username, password):
 
 # Ask the user for the LinkedIn company name to search for an ID
 def ask_user_for_linkedin_company_name():
-
     # Set a blank error message
     error_message = ""
 
@@ -481,7 +472,6 @@ def ask_user_for_linkedin_company_name():
 
 # Search for a company ID on LinkedIn using the company name
 def get_company_id_from_linkedin(company_name, cookie_dict):
-
     # Create a list to store the company name and ID
     list_of_companies = []
 
@@ -489,7 +479,7 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
     url = "https://www.linkedin.com/voyager/api/typeahead/hits?q=blended&query=" + company_name
 
     # Add v2 API headers
-    v2headers = {"Csrf-Token":cookie_dict["JSESSIONID"], "X-RestLi-Protocol-Version": "2.0.0"}
+    v2headers = {"Csrf-Token": cookie_dict["JSESSIONID"], "X-RestLi-Protocol-Version": "2.0.0"}
 
     # Get the json data from the response
     json_data = json.loads(requests.get(url, cookies=cookie_dict, headers=v2headers).text)
@@ -502,7 +492,7 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
 
         # Try to get the company name and ID
         try:
-            
+
             # Get the company name
             company_name = json_data["elements"][x]["hitInfo"]["com.linkedin.voyager.typeahead.TypeaheadCompany"] \
                 ["company"]["name"]
@@ -529,7 +519,7 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
 
     # Get the json data from the response
     json_data = json.loads(requests.get(url, cookies=cookie_dict, headers=v2headers).text)
-    
+
     # Tell the user that companies are being searched for using a keyword
     print(("\n" + info + "Searching for companies using keyword \"" + company_name + "\""))
 
@@ -556,16 +546,15 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
 
             # Try to get the company name and ID
             try:
-                
+
                 # Get the company name
                 company_name = json_data["elements"][0]["elements"][x]["title"]["text"]
-                
+
                 # Get the company ID
                 company_id = json_data["elements"][0]["elements"][x]["trackingUrn"].split(":")[-1]
-                    
-                # Check if the company name and ID are not already in the list
-                if (company_name,company_id) not in list_of_companies:
 
+                # Check if the company name and ID are not already in the list
+                if (company_name, company_id) not in list_of_companies:
                     # Add the company name and ID to the list of companies
                     list_of_companies.append((company_name, company_id))
 
@@ -581,7 +570,7 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
 
     # Check if a company was found
     if list_of_companies:
-        
+
         # Set the first company name found
         company_name = list_of_companies[0][0]
 
@@ -604,7 +593,6 @@ def get_company_id_from_linkedin(company_name, cookie_dict):
 
 # Ask the user for the LinkedIn company ID
 def ask_user_for_linkedin_company_id(cookie_dict):
-
     # Set a blank error message
     error_message = ""
 
@@ -633,7 +621,7 @@ def ask_user_for_linkedin_company_id(cookie_dict):
 
             # Company ID found
             else:
-                
+
                 # Set a blank error message for the main loop
                 error_message = ""
 
@@ -642,7 +630,7 @@ def ask_user_for_linkedin_company_id(cookie_dict):
 
                 # Loop until a valid integer has been entered
                 while True:
-        
+
                     # Check if the correct company was found
                     linkedin_company_correct = input("\n" + error_msg + "Would you like to select the company \"" +
                                                      linkedinCompanyName + "\" with an ID of \"" +
@@ -677,7 +665,6 @@ def ask_user_for_linkedin_company_id(cookie_dict):
 
                 # Check if ID can be casted to int, is not blank, and is greater than 0
                 if int(linkedin_company_id) > 0:
-
                     # Print a blank line
                     print("")
 
@@ -686,14 +673,13 @@ def ask_user_for_linkedin_company_id(cookie_dict):
 
             # Input is not an integer
             except:
-                
+
                 # Set the error message to not an integer
                 error_message = failure + "Input was not a valid integer. "
 
 
 # Get the keywords search string for LinkedIn URLs
 def get_search_string(keywordsForSearch):
-
     # Check if there are no keywords
     if keywordsForSearch == "":
 
@@ -702,7 +688,7 @@ def get_search_string(keywordsForSearch):
 
     # There are keywords to search for
     else:
-        
+
         # Set the keywords search string
         keywords_search_string = "&keywords=" + keywordsForSearch
 
@@ -712,7 +698,6 @@ def get_search_string(keywordsForSearch):
 
 # Get the number of LinkedIn pages to search
 def get_the_number_of_linkedin_pages_to_search(numberOfProfilesPerPage, keywordsForSearch, companyId, dictOfCookies):
-
     # Get the keywords search string
     keywords_search_string = get_search_string(keywordsForSearch)
 
@@ -722,14 +707,14 @@ def get_the_number_of_linkedin_pages_to_search(numberOfProfilesPerPage, keywords
     url += ")&origin=OTHER&q=guided&start=0"
 
     # Add v2 API headers
-    v2headers = {"Csrf-Token":dictOfCookies["JSESSIONID"], "X-RestLi-Protocol-Version":"2.0.0"}
+    v2headers = {"Csrf-Token": dictOfCookies["JSESSIONID"], "X-RestLi-Protocol-Version": "2.0.0"}
 
     # Get the json data from the response
     jsonData = json.loads(requests.get(url, cookies=dictOfCookies, headers=v2headers).text)
 
     # Try to get data for the company
     try:
-        
+
         # Get the total number of profiles
         totalProfiles = jsonData["elements"][0]["total"]
 
@@ -738,7 +723,7 @@ def get_the_number_of_linkedin_pages_to_search(numberOfProfilesPerPage, keywords
 
         # Tell the user there were no results
         print((warning + "There were no search results for company ID \"" + companyId + "\" using the keywords \"" +
-              keywordsForSearch + "\"."))
+               keywordsForSearch + "\"."))
 
         # Return since a company was not found
         return 0
@@ -748,7 +733,6 @@ def get_the_number_of_linkedin_pages_to_search(numberOfProfilesPerPage, keywords
 
     # Check if there are more than 1,000 profiles
     if totalProfiles > 1000:
-
         # Limit to 1,000 profiles because this is the maximum that LinkedIn supports
         numberOfPagesToSearch = int(math.ceil(float(1000) / numberOfProfilesPerPage))
 
@@ -760,7 +744,6 @@ def get_the_number_of_linkedin_pages_to_search(numberOfProfilesPerPage, keywords
 def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch, keywordsForSearch, emailFormat,
                                  domainName, companyId, listOfPublicIdentifiers, listOfEmails, listOfUniqueEmails,
                                  dictOfCookies):
-
     # Get the keywords search string
     keywordsSearchString = get_search_string(keywordsForSearch)
 
@@ -769,13 +752,13 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
 
     # Set the maximum page number
     maxPageNumber = max(pageNumbers) + 1
-    
+
     # Loop through all of the pages
     for pageNumber in pageNumbers:
 
         # Check if there is not a keyword
         if keywordsForSearch == "":
-        
+
             # Print the current search page
             print(("\n" + info + "Searching LinkedIn page " + str(pageNumber + 1) + " of " + str(maxPageNumber)))
 
@@ -784,7 +767,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
 
             # Print the current search page and keyword
             print(("\n" + info + "Searching LinkedIn page " + str(pageNumber + 1) + " of " + str(maxPageNumber) +
-                  " using the keyword \"" + keywordsForSearch + "\""))
+                   " using the keyword \"" + keywordsForSearch + "\""))
 
         # Set the url using the page number
         url = "https://www.linkedin.com/voyager/api/search/cluster?count=" + str(numberOfProfilesPerPage) + \
@@ -792,7 +775,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
               ")&origin=OTHER&start=" + str(pageNumber * numberOfProfilesPerPage)
 
         # Add v2 API headers
-        v2headers = {"Csrf-Token":dictOfCookies["JSESSIONID"], "X-RestLi-Protocol-Version":"2.0.0"}
+        v2headers = {"Csrf-Token": dictOfCookies["JSESSIONID"], "X-RestLi-Protocol-Version": "2.0.0"}
 
         # Get the json data from the response
         jsonData = json.loads(requests.get(url, cookies=dictOfCookies, headers=v2headers).text)
@@ -828,7 +811,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
             warningMessage = ""
 
             # Check if profile details are available
-            if "com.linkedin.voyager.search.SearchProfile" in profile["hitInfo"] and not profile["hitInfo"]\
+            if "com.linkedin.voyager.search.SearchProfile" in profile["hitInfo"] and not profile["hitInfo"] \
                     ["com.linkedin.voyager.search.SearchProfile"]["headless"]:
 
                 # Try to get public identifier
@@ -836,7 +819,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
 
                     # Get the public identifier
                     publicIdentifier = "https://www.linkedin.com/in/" + \
-                                       str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                                       str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                                ["miniProfile"]["publicIdentifier"])
 
                 # There was no public identifier
@@ -847,14 +830,13 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
 
                 # Check if the profile is already in the list and not blank
                 if publicIdentifier in listOfPublicIdentifiers and publicIdentifier != "":
-
                     # Continue since the profile was already added
                     continue
 
                 # Get the names
-                firstNameRaw = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                firstNameRaw = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                        ["miniProfile"]["firstName"].encode("utf8"))
-                lastNameRaw = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                lastNameRaw = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                       ["miniProfile"]["lastName"].encode("utf8"))
 
                 # Get the first word of the names
@@ -910,7 +892,6 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
 
                     # Check the email format that the user supplied
                     if emailFormat != "firstl" and emailFormat != "first":
-
                         # Tell the user that the last name was an initial
                         warningMessage += "The last name is an initial. "
 
@@ -943,14 +924,14 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
 
                 # Try to get occupation
                 try:
-                    occupation = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    occupation = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                          ["miniProfile"]["occupation"])
                 except:
                     occupation = ""
 
                 # Try to get profile heading
                 try:
-                    profileHeading = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    profileHeading = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                              ["snippets"][0]["heading"]["text"])
                 except:
                     profileHeading = ""
@@ -971,28 +952,28 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                 try:
 
                     # Check if connection is first
-                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                    ["distance"]["value"]) == "DISTANCE_1":
 
                         # Set connection to first
                         connection = "First"
 
                     # Check if connection is second
-                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                      ["distance"]["value"]) == "DISTANCE_2":
 
                         # Set connection to second
                         connection = "Second"
 
                     # Check if connection is third
-                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                      ["distance"]["value"]) == "DISTANCE_3":
 
                         # Set connection to third
                         connection = "Third"
 
                     # Check if connection is out of network
-                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                      ["distance"]["value"]) == "OUT_OF_NETWORK":
 
                         # Set connection to third
@@ -1002,7 +983,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                     else:
 
                         # Set connection
-                        connection = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                        connection = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                              ["distance"]["value"])
 
                 except:
@@ -1012,14 +993,14 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                 try:
 
                     # Check if premium is true
-                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                    ["memberBadges"]["premium"]) == "True":
 
                         # Set premium to true
                         premium = "Yes"
 
                     # Check if premium is false
-                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                      ["memberBadges"]["premium"]) == "False":
 
                         # Set premium to false
@@ -1029,7 +1010,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                     else:
 
                         # Set premium
-                        premium = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                        premium = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                           ["memberBadges"]["premium"])
 
                 except:
@@ -1039,14 +1020,14 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                 try:
 
                     # Check if jobSeeker is true
-                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                    ["memberBadges"]["jobSeeker"]) == "True":
 
                         # Set jobSeeker to true
                         jobSeeker = "Yes"
 
                     # Check if jobSeeker is false
-                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                      ["memberBadges"]["jobSeeker"]) == "False":
 
                         # Set jobSeeker to false
@@ -1056,7 +1037,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                     else:
 
                         # Set jobSeeker
-                        jobSeeker = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                        jobSeeker = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                             ["memberBadges"]["jobSeeker"])
 
                 except:
@@ -1066,14 +1047,14 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                 try:
 
                     # Check if influencer is true
-                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    if str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                    ["memberBadges"]["influencer"]) == "True":
 
                         # Set influencer to true
                         influencer = "Yes"
 
                     # Check if influencer is false
-                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    elif str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                      ["memberBadges"]["influencer"]) == "False":
 
                         # Set influencer to false
@@ -1083,7 +1064,7 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
                     else:
 
                         # Set influencer
-                        influencer = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                        influencer = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                              ["memberBadges"]["influencer"])
 
                 except:
@@ -1091,38 +1072,38 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
 
                 # Try to get school name
                 try:
-                    schoolName = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    schoolName = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                          ["educations"][0]["schoolName"])
                 except:
                     schoolName = ""
 
                 # Try to get school degree
                 try:
-                    schoolDegree = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]\
+                    schoolDegree = str(profile["hitInfo"]["com.linkedin.voyager.search.SearchProfile"] \
                                            ["educations"][0]["degree"])
                 except:
                     schoolDegree = ""
 
                 # Try to get school field of study
                 try:
-                    schoolFieldOfStudy = str(profile["hitInfo"]\
-                                                 ["com.linkedin.voyager.search.SearchProfile"]\
+                    schoolFieldOfStudy = str(profile["hitInfo"] \
+                                                 ["com.linkedin.voyager.search.SearchProfile"] \
                                                  ["educations"][0]["fieldOfStudy"])
                 except:
                     schoolFieldOfStudy = ""
 
                 # Try to get school start year
                 try:
-                    schoolStartYear = str(profile["hitInfo"]\
-                                              ["com.linkedin.voyager.search.SearchProfile"]\
+                    schoolStartYear = str(profile["hitInfo"] \
+                                              ["com.linkedin.voyager.search.SearchProfile"] \
                                               ["educations"][0]["startedOn"]["year"])
                 except:
                     schoolStartYear = ""
 
                 # Try to get school end year
                 try:
-                    schoolEndYear = str(profile["hitInfo"]\
-                                            ["com.linkedin.voyager.search.SearchProfile"]\
+                    schoolEndYear = str(profile["hitInfo"] \
+                                            ["com.linkedin.voyager.search.SearchProfile"] \
                                             ["educations"][0]["endedOn"]["year"])
                 except:
                     schoolEndYear = ""
@@ -1157,17 +1138,15 @@ def search_linkedin_for_profiles(numberOfProfilesPerPage, numberOfPagesToSearch,
             # Determine if you want to update the unique email list. True will remove duplicates when scraping other
             # sites. False allows validation that LinkedIn generated emails were scraped from other websites
             updateUniqueEmailList = False
-            
+
             # Check if the list should be updated
             if updateUniqueEmailList:
-
                 # Update the list of unique email addresses
                 listOfUniqueEmails.append(emailAddress)
 
 
 # Ask the user if they want to continue LinkedIn due to the results being over 1,000
 def ask_user_to_continue_generating_emails_from_linkedin():
-
     # Set a blank error message
     errorMessage = ""
 
@@ -1178,7 +1157,7 @@ def ask_user_to_continue_generating_emails_from_linkedin():
         continueCheckingLinkedin = input("\n" + errorMessage + "There were over 1,000 profile results. LinkedIn "
                                                                "limited the profiles results to 1,000. Would you like "
                                                                "to continue searching LinkedIn for emails? (y/n)" +
-                                                               "\n").lower()
+                                         "\n").lower()
 
         # Check if the choice is yes
         if continueCheckingLinkedin == "y" or continueCheckingLinkedin == "yes":
@@ -1204,17 +1183,15 @@ def get_emails_from_linkedin_using_search_terms_that_are_common(numberOfProfiles
                                                                 domainName, companyId, listOfPublicIdentifiers,
                                                                 listOfEmails, listOfUniqueEmails, dictOfCookies,
                                                                 commonSearchTerms, searchType):
-
     # Tell the user what is being searched for
-    print(("\n" + info + "Searching LinkedIn using common " + searchType + \
-           ". Press Ctrl+c to stop this search and continue"))
+    print("\n" + info + "Searching LinkedIn using common " + searchType +
+          ". Press Ctrl+c to stop this search and continue")
 
     # Try to perform many searches, allowing the user to cancel if needed
     try:
 
         # Loop through the common search terms
         for searchTerm in commonSearchTerms:
-
             # Get the number of pages to search
             numberOfLinkedinPagesToSearch = get_the_number_of_linkedin_pages_to_search(numberOfProfilesToDisplayPerPage,
                                                                                        searchTerm, companyId,
@@ -1239,17 +1216,16 @@ def get_emails_from_linkedin_using_search_terms_that_are_common(numberOfProfiles
 def get_emails_from_linkedin_using_search_terms(numberOfProfilesToDisplayPerPage, emailFormat, domainName, companyId,
                                                 listOfPublicIdentifiers, listOfEmails, listOfUniqueEmails,
                                                 dictOfCookies):
-
     # Create a list of common first names
     commonFirstNames = ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Charles", "Joseph",
                         "Thomas", "Kevin", "Jason", "Matt", "Tim", "Larry", "Mary", "Patricia", "Linda", "Barbara",
                         "Elizabeth", "Jennifer", "Maria", "Susan", "Margaret", "Lisa", "Sarah", "Kim", "Jessica",
                         "Melissa", "Amy"]
-    
+
     # Create a list of common last names
     commonLastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia", "Rodriguez",
                        "Wilson"]
-    
+
     # Create a list of common job titles
     commonJobTitles = ["Analyst", "Engineer", "Consultant", "Specialist", "Operator", "Intern", "Associate",
                        "Assistant", "Admin", "Administrator", "Data", "Driver", "Warehouse", "Recruiter", "Tester",
@@ -1285,7 +1261,6 @@ def get_emails_from_linkedin_using_search_terms(numberOfProfilesToDisplayPerPage
 # Get emails from LinkedIn
 def get_emails_from_linkedin(emailFormat, domainName, companyId, listOfPublicIdentifiers,
                              listOfEmails, listOfUniqueEmails, dictOfCookies):
-
     # Set the number of profiles to display per page to 49 since this is the max allowed
     numberOfProfilesToDisplayPerPage = 49
 
@@ -1333,7 +1308,6 @@ def get_emails_from_linkedin(emailFormat, domainName, companyId, listOfPublicIde
 
         # Check if the user wants to continue checking LinkedIn
         if continueCheckingLinkedin:
-                
             # Continue checking LinkedIn
             get_emails_from_linkedin_using_search_terms(numberOfProfilesToDisplayPerPage, emailFormat, domainName,
                                                         companyId, listOfPublicIdentifiers, listOfEmails,
@@ -1342,7 +1316,6 @@ def get_emails_from_linkedin(emailFormat, domainName, companyId, listOfPublicIde
 
 # Get emails from www.email-format.com
 def get_emails_from_emailformat(domain, listOfEmails, listOfUniqueEmails):
-
     # Tell the user the search has started
     print(("\n" + info + "Searching www.email-format.com for emails."))
 
@@ -1379,7 +1352,6 @@ def get_emails_from_emailformat(domain, listOfEmails, listOfUniqueEmails):
 
 # Get emails from www.skymem.info
 def get_emails_from_skymem(domain, listOfEmails, listOfUniqueEmails):
-
     # Tell the user the search has started
     print(("\n" + info + "Searching www.skymem.info for emails. Press Ctrl+c to stop this search and continue"))
 
@@ -1388,7 +1360,6 @@ def get_emails_from_skymem(domain, listOfEmails, listOfUniqueEmails):
 
     # Get the link to page 2 results
     for link in soup.findAll("a", href=lambda href: href and "domain" in href):
-
         # Set the page 2 link
         pageTwoLink = link.get("href")
 
@@ -1406,13 +1377,12 @@ def get_emails_from_skymem(domain, listOfEmails, listOfUniqueEmails):
 
     # Set the initial number of emails to 0
     numberOfEmails = 0
-    
+
     # Get the total number of emails
     for span in soup.findAll("span"):
 
         # Check if the show first text if found
         if "Show first" in span.text:
-            
             # Set the number of emails. span.text == "( Show first XXXX emails. Need more? Use advanced search )"
             numberOfEmails = span.text.split()[3]
 
@@ -1421,7 +1391,6 @@ def get_emails_from_skymem(domain, listOfEmails, listOfUniqueEmails):
 
     # Check if no emails were found
     if numberOfEmails == 0:
-
         # Tell the user that no emails were found
         print((warning + "No emails found at www.skymem.info"))
 
@@ -1467,7 +1436,6 @@ def get_emails_from_skymem(domain, listOfEmails, listOfUniqueEmails):
 
 # Save the list of emails
 def save_emails(filename, listOfEmails):
-
     # Check that there are emails to save
     if len(listOfEmails) > 1:
 
@@ -1488,7 +1456,6 @@ def save_emails(filename, listOfEmails):
 
 # Main
 def main():
-
     # Print the banner
     print_banner()
 
@@ -1501,31 +1468,31 @@ def main():
 
     # Create a list to store only the email addresses
     listOfUniqueEmailAddresses = []
-    
+
     # Create a list of unique identifiers to avoid adding duplicate profiles from LinkedIn
     listOfLinkedinPublicIdentifiers = []
-    
+
     # Ask the user for the domain
-    domain = ask_user_for_domain()
+    domain = get_domain()
 
     # Ask the user for the output filename
-    outputFilename = ask_user_for_output_filename(domain)
+    outputFilename = get_output_filename(domain)
 
     # Check if the file is open
     check_outputfile(outputFilename, listOfEmailAddresses)
 
     # Ask the user for the email format
-    emailFormat = ask_user_for_email_format(domain)
+    emailFormat = ask_email_format(domain)
 
     # Ask the user if they want to check LinkedIn for emails
-    checkLinkedin = ask_user_to_generate_emails_from_linkedin()
+    checkLinkedin = get_linkedin_users()
 
     # Check if the user wants to check LinkedIn for emails
     if checkLinkedin:
 
         # Ask the user for their LinkedIn email
         linkedinEmail = ask_user_for_linkedin_email()
-        
+
         # Ask the user for their LinkedIn password
         linkedinPassword = ask_user_for_linkedin_password()
 
@@ -1534,13 +1501,12 @@ def main():
 
         # Check if the login was not successful
         if dictionaryOfCookies == None:
-
             # Tell the user that the login was not successful
             print((warning + "Unable to login to LinkedIn. Trying again" + "\n"))
 
             # Log the user into LinkedIn
             dictionaryOfCookies = login_to_linkedin(linkedinEmail, linkedinPassword)
-        
+
         # Check if the login was not successful
         if dictionaryOfCookies == None:
 
@@ -1549,7 +1515,7 @@ def main():
 
         # Login was successful
         else:
-            
+
             # Ask the user for the company ID
             companyId = ask_user_for_linkedin_company_id(dictionaryOfCookies)
 
@@ -1573,7 +1539,7 @@ def main():
     except:
 
         # Tell the user that emails were not found
-        print((warning + "An issue occured while scraping emails from www.email-format.com"))
+        print((warning + "An issue occurred while scraping emails from www.email-format.com"))
 
     # Try to scrape emails
     try:
@@ -1599,7 +1565,6 @@ def main():
 
 # Only execute when running as primary module or called from another script
 if __name__ == "__main__":
-
     # Execute main, get status code
     status = main()
 
