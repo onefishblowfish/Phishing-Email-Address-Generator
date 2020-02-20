@@ -100,8 +100,8 @@ def get_domain():
 # Ask the user for the output filename
 def get_output_filename(domain):
     # Ask the user for the output filename
-    output_filename = eval(input("\n" + "Enter a filename for the output. Leave blank to use \"emails-" +
-                                 domain + ".csv\"" + "\n"))
+    output_filename = input("\n" + "Enter a filename for the output. Leave blank to use \"emails-" +
+                                 domain + ".csv\"" + "\n")
 
     # Check if no name was given
     if output_filename == "":
@@ -600,8 +600,8 @@ def ask_user_for_linkedin_company_id(cookie_dict):
     while True:
 
         # Ask the user to enter the company ID
-        linkedin_company_id = eval(input("\n" + error_message +
-                                         "What is the LinkedIn company ID? Leave blank to search for the ID." + "\n"))
+        linkedin_company_id = input("\n" + error_message +
+                                         "What is the LinkedIn company ID? Leave blank to search for the ID." + "\n")
 
         # Check if the user wants to search for the company ID
         if linkedin_company_id == "":
