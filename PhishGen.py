@@ -14,10 +14,8 @@ import urllib3  # For logging into LinkedIn
 import colorama
 from bs4 import BeautifulSoup
 
-# Initialize Colorama
+# Initialize colorama and set the colors
 colorama.init()
-
-# Set the colors
 bo = colorama.Style.BRIGHT
 gr = bo + colorama.Fore.GREEN
 bl = bo + colorama.Fore.BLUE
@@ -106,21 +104,13 @@ def get_output_filename(domain):
     # Check if no name was given
     if output_filename == "":
         output_filename = "emails-" + domain + ".csv"
-
-    # A name was given
     else:
-        # Print a blank line
-        print("")
+        print()
 
     # Check if a valid file extension was added by the user
     if output_filename[-4:] != ".csv":
-        # Add the file extension
         output_filename = output_filename + ".csv"
-
-    # Tell the user the filename
     print((info + "The list of emails will be saved as " + output_filename))
-
-    # Return the filename
     return output_filename
 
 
@@ -132,8 +122,6 @@ def check_outputfile(filename, email_list):
         with open(filename, "wb") as fileOfEmails:
             csv_writer = csv.writer(fileOfEmails, quoting=csv.QUOTE_ALL)
             csv_writer.writerows(email_list)
-
-    # File is open
     except:
         # Tell the user to close the file
         print(("\n" + warning + "Close the file \"" + filename + "\""))
