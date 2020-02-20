@@ -172,7 +172,7 @@ def get_soup(url, opener=None, parameters=None):
     # Catch exceptions
     except urllib3.URLError as e:
         # Tell the user that there was an error
-        print(("\n" + failure + "An error occured fetching " + url + " \n " + e.reason))
+        print(("\n" + failure + "An error occurred fetching " + url + " \n " + e.reason))
         # Return there was an error
         return "Error"
 
