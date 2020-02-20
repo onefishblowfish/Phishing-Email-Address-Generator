@@ -31,6 +31,9 @@ info = bo + bl + "[*] " + en
 warning = bo + ye + "[-] " + en
 failure = bo + re + "[!] " + en
 
+# Other constants
+yes_answers = ["y","yes","Y","Yes"]
+no_answers = ["n","no","N","No"]
 
 # Print the banner
 def print_banner():
@@ -119,8 +122,8 @@ def check_outputfile(filename, email_list):
     # Try to open the file
     try:
         # Test saving the header row to the file
-        with open(filename, "wb") as fileOfEmails:
-            csv_writer = csv.writer(fileOfEmails, quoting=csv.QUOTE_ALL)
+        with open(filename, "w") as email_file:
+            csv_writer = csv.writer(email_file, quoting=csv.QUOTE_ALL)
             csv_writer.writerows(email_list)
     except:
         # Tell the user to close the file
@@ -134,8 +137,8 @@ def check_outputfile(filename, email_list):
             # Try to open the file
             try:
                 # Test saving the header row to the file
-                with open(filename, "wb") as fileOfEmails:
-                    csv_writer = csv.writer(fileOfEmails, quoting=csv.QUOTE_ALL)
+                with open(filename, "w") as email_file:
+                    csv_writer = csv.writer(email_file, quoting=csv.QUOTE_ALL)
                     csv_writer.writerows(email_list)
 
                 # File write was successful
@@ -1428,8 +1431,8 @@ def save_emails(filename, emails_list):
     if len(emails_list) > 1:
 
         # Save the results as a csv file
-        with open(filename, "wb") as fileOfEmails:
-            csv_writer = csv.writer(fileOfEmails, quoting=csv.QUOTE_ALL)
+        with open(filename, "w") as email_file:
+            csv_writer = csv.writer(email_file, quoting=csv.QUOTE_ALL)
             csv_writer.writerows(emails_list)
 
         # Tell the user the file has been saved
